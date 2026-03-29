@@ -1,5 +1,7 @@
 package hr.abysalto.hiring.api.junior.components;
 
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -9,13 +11,19 @@ public class DatabaseInitializer {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	private boolean dataInitialized = false;
+	@Getter
+    private boolean dataInitialized = false;
 
-	public boolean isDataInitialized() {
-		return this.dataInitialized;
+    /** InitDataController only runs on POST /init-data/; this runs once when the app starts. */
+	@PostConstruct
+	void createSchemaOnStartup() {
+		initialize();
 	}
 
 	public void initialize() {
+		if (this.dataInitialized) {
+			return;
+		}
 		initTables();
 		initData();
 		this.dataInitialized = true;

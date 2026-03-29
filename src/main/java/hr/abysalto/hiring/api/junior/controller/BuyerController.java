@@ -47,7 +47,7 @@ public class BuyerController {
 		}
 	}
 
-	@GetMapping("/")
+	@GetMapping({ "", "/" })
 	public String viewHomePage(Model model) {
 		model.addAttribute("buyerList", this.buyerManager.getAllBuyers());
 		return "buyer/index";
@@ -63,7 +63,7 @@ public class BuyerController {
 	@PostMapping("/save")
 	public String sabeBuyer(@ModelAttribute("buyer") Buyer buyer) {
 		this.buyerManager.save(buyer);
-		return "redirect:/buyer/";
+		return "redirect:/buyer";
 	}
 
 	@GetMapping("/showFormForUpdate/{id}")
@@ -76,7 +76,7 @@ public class BuyerController {
 	@GetMapping("/deleteBuyer/{id}")
 	public String deleteById(@PathVariable(value = "id") long id) {
 		this.buyerManager.deleteById(id);
-		return "redirect:/buyer/";
+		return "redirect:/buyer";
 	}
 
 }

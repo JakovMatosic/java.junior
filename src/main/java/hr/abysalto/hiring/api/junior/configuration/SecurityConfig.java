@@ -34,7 +34,7 @@ public class SecurityConfig {
 								.requestMatchers("/v3/api-docs*/**").permitAll()
 								.anyRequest().authenticated())
 			.httpBasic(Customizer.withDefaults())
-			.formLogin(Customizer.withDefaults());
+			.formLogin(form -> form.defaultSuccessUrl("/", true));
 		return http.build();
 	}
 
