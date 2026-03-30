@@ -11,7 +11,7 @@
     <h3>Create New Order</h3>
     <hr>
 
-    <form th:action="@{/orders/saveOrder}" th:object="${order}" method="POST">
+    <form th:action="@{/orders/saveOrder}" th:object="${order}" method="POST" id="orderForm">
         <div class="row">
             <div class="col-md-6 form-group">
                 <label>Select Buyer</label>
@@ -67,23 +67,122 @@
         <hr>
         <h5>Items</h5>
         <div id="items-container">
-            <div class="row mb-2" th:each="item, itemStat : *{orderItems}">
+            <div class="row mb-2 order-item" th:each="item, itemStat : *{orderItems}">
                 <div class="col-md-6">
                     <input type="text" th:field="*{orderItems[__${itemStat.index}__].name}"
                            class="form-control" placeholder="Item Name">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <input type="number" th:field="*{orderItems[__${itemStat.index}__].quantity}"
-                           class="form-control" placeholder="Qty">
+                           class="form-control" placeholder="Qty" min="1">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <input type="number" step="0.01" th:field="*{orderItems[__${itemStat.index}__].price}"
                            class="form-control" placeholder="Price">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm remove-item-btn">Remove</button>
                 </div>
             </div>
         </div>
 
+        <button type="button" id="addItemBtn" class="btn btn-secondary mt-2">Add Another Item</button>
+
         <button type="submit" class="btn btn-success mt-3">Save Order</button>
+    </form>
+</div>
+
+<script>
+    let itemCount = document.querySelectorAll('.order-item').length;
+
+    document.getElementById('addItemBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        const container = document.getElementById('items-container');
+        const newItem = document.createElement('div');
+        newItem.className = 'row mb-2 order-item';
+        newItem.innerHTML = `
+            <div class="col-md-6">
+                <input type="text" name="orderItems[${itemCount}].name" class="form-control" placeholder="Item Name">
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="orderItems[${itemCount}].quantity" class="form-control" placeholder="Qty" min="1">
+            </div>
+            <div class="col-md-2">
+                <input type="number" step="0.01" name="orderItems[${itemCount}].price" class="form-control" placeholder="Price">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-danger btn-sm remove-item-btn">Remove</button>
+            </div>
+        `;
+        container.appendChild(newItem);
+        itemCount++;
+        
+        // Attach remove handler to new button
+        newItem.querySelector('.remove-item-btn').addEventListener('click', removeItem);
+    });
+
+    // Attach remove handler to existing buttons
+    document.querySelectorAll('.remove-item-btn').forEach(btn => {
+        btn.addEventListener('click', removeItem);
+    });
+
+    function removeItem(e) {
+        e.preventDefault();
+        e.target.closest('.order-item').remove();
+    }
+
+    // Filter out empty items before form submission
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+        const items = document.querySelectorAll('.order-item');
+        let hasValidItems = false;
+        
+        items.forEach(item => {
+            const nameInput = item.querySelector('input[type="text"]');
+            const quantityInput = item.querySelector('input[type="number"]:first-of-type');
+            
+            // Check if name and quantity have values
+            const hasName = nameInput && nameInput.value.trim();
+            const hasQuantity = quantityInput && quantityInput.value;
+            
+            if (hasName && hasQuantity) {
+                hasValidItems = true;
+            } else if (!hasName || !hasQuantity) {
+                // Remove incomplete items
+                item.remove();
+            }
+        });
+        
+        // Prevent submission if no valid items
+        if (!hasValidItems) {
+            e.preventDefault();
+            alert('Please add at least one item with name and quantity.');
+            return;
+        }
+        
+        // Validate required fields
+        const buyerId = document.querySelector('select[name*="buyerId"]').value;
+        const deliveryAddressId = document.querySelector('select[name*="deliveryAddressId"]').value;
+        const currency = document.querySelector('input[name*="currency"]').value;
+        
+        if (!buyerId || !buyerId.trim()) {
+            e.preventDefault();
+            alert('Please select a buyer.');
+            return;
+        }
+        
+        if (!deliveryAddressId || !deliveryAddressId.trim()) {
+            e.preventDefault();
+            alert('Please select a delivery address.');
+            return;
+        }
+        
+        if (!currency || !currency.trim()) {
+            e.preventDefault();
+            alert('Please enter a currency.');
+            return;
+        }
+    });
+</script>
     </form>
 </div>
 </body>
