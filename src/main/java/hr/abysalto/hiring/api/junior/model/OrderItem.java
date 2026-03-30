@@ -9,8 +9,7 @@ import org.springframework.data.annotation.Id;
 public class OrderItem {
 	@Id
 	private Long orderItemId;
-	private Long orderId;
-	private Short itemNr;
+	private Integer orderKey; // Matches the new DB column
 	private String name;
 	private Short quantity;
 	private BigDecimal price;

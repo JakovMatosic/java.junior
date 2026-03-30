@@ -72,8 +72,8 @@ public class DatabaseInitializer {
         this.jdbcTemplate.execute("""
                     CREATE TABLE order_item (
                        order_item_id INT auto_increment PRIMARY KEY,
-                       order_id int NOT NULL, -- Make sure this matches private Long orderId in Java
-                       item_nr smallint NOT NULL,
+                       order_id int NOT NULL,
+                       order_key int,
                        name varchar(100) NOT NULL,
                        quantity smallint NOT NULL,
                        price decimal,
@@ -88,5 +88,23 @@ public class DatabaseInitializer {
         this.jdbcTemplate.execute("INSERT INTO buyer (first_name, last_name, title) VALUES ('Jar Jar', 'Binks', NULL)");
         this.jdbcTemplate.execute("INSERT INTO buyer (first_name, last_name, title) VALUES ('Han', 'Solo', NULL)");
         this.jdbcTemplate.execute("INSERT INTO buyer (first_name, last_name, title) VALUES ('Leia', 'Organa', 'Princess')");
+
+        this.jdbcTemplate.execute("INSERT INTO buyer_address (city, street, home_number) VALUES ('Tatooine', 'Dune Sea', '1')");
+        this.jdbcTemplate.execute("INSERT INTO buyer_address (city, street, home_number) VALUES ('Coruscant', 'Galactic City', '500')");
+        this.jdbcTemplate.execute("INSERT INTO buyer_address (city, street, home_number) VALUES ('Naboo', 'Otoh Gunga', 'Binks-2')");
+        this.jdbcTemplate.execute("INSERT INTO buyer_address (city, street, home_number) VALUES ('Alderaan', 'Royal Palace', 'A1')");
+
+        this.jdbcTemplate.execute("""
+                    INSERT INTO "order" (buyer_id, order_status, order_time, payment_option, delivery_address_id, contact_number, note, currency, total_price) 
+                    VALUES (5, 'PREPARING', NOW(), 'CASH', 4, '555-LEIA', 'Deliver to back gate', 'EUR', 150.00)
+                """);
+
+        this.jdbcTemplate.execute("""
+                    INSERT INTO "order" (buyer_id, order_status, order_time, payment_option, delivery_address_id, contact_number, note, currency, total_price) 
+                    VALUES (1, 'PREPARING', NOW(), 'CARD_UPFRONT', 1, '555-HUTT', 'Fragile!', 'EUR', 3000.50)
+                """);
+
+        this.jdbcTemplate.execute("INSERT INTO order_item (order_id, name, quantity, price) VALUES (1, 'Thermal Detonator', 2, 75.00)");
+        this.jdbcTemplate.execute("INSERT INTO order_item (order_id, name, quantity, price) VALUES (2, 'Han Solo in Carbonite', 1, 3000.50)");
     }
 }

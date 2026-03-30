@@ -1,6 +1,7 @@
 package hr.abysalto.hiring.api.junior.controller;
 
 import hr.abysalto.hiring.api.junior.model.Order;
+import hr.abysalto.hiring.api.junior.model.OrderItem;
 import hr.abysalto.hiring.api.junior.repository.BuyerAddressRepository;
 import hr.abysalto.hiring.api.junior.repository.BuyerRepository;
 import hr.abysalto.hiring.api.junior.repository.OrderRepository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,6 +52,28 @@ public class OrderController {
 
         return "order/index";
     }
+
+    @GetMapping("/addnew")
+    public String showNewOrderForm(Model model) {
+        Order order = new Order();
+        // Initialize with one empty item so the user has a row to fill
+        order.setOrderItems(new java.util.ArrayList<>());
+        order.getOrderItems().add(new OrderItem());
+
+        // We need to pass the list of existing buyers and addresses for the dropdowns
+        model.addAttribute("order", order);
+        model.addAttribute("allBuyers", buyerRepository.findAll());
+        model.addAttribute("allAddresses", buyerAddressRepository.findAll());
+        return "order/new_order"; // Adjust path if needed
+    }
+
+    @PostMapping("/saveOrder")
+    public String saveOrder(@ModelAttribute("order") Order order) {
+        order.setOrderTime(LocalDateTime.now());
+        orderRepository.save(order);
+        return "redirect:/orders";
+    }
+
 
     @GetMapping("/deleteOrder/{id}")
     public String deleteOrder(@PathVariable("id") Long id) {

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Order</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container my-4">
+    <p><a th:href="@{/orders}">← Back to orders</a></p>
+    <h3>Create New Order</h3>
+    <hr>
+
+    <form th:action="@{/orders/saveOrder}" th:object="${order}" method="POST">
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label>Select Buyer</label>
+                <select th:field="*{buyerId}" class="form-control" required>
+                    <option value="">-- Choose Buyer --</option>
+                    <option th:each="b : ${allBuyers}" th:value="${b.buyerId}"
+                            th:text="${b.firstName + ' ' + b.lastName}"></option>
+                </select>
+            </div>
+
+            <div class="col-md-6 form-group">
+                <label>Delivery Address</label>
+                <select th:field="*{deliveryAddressId}" class="form-control" required>
+                    <option value="">-- Choose Address --</option>
+                    <option th:each="a : ${allAddresses}" th:value="${a.buyerAddressId}"
+                            th:text="${a.street + ' ' + a.homeNumber + ', ' + a.city}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 form-group">
+                <label>Contact Number</label>
+                <input type="text" th:field="*{contactNumber}" class="form-control" placeholder="09x xxxx xxx">
+            </div>
+            <div class="col-md-4 form-group">
+                <label>Currency</label>
+                <input type="text" th:field="*{currency}" class="form-control" value="EUR">
+            </div>
+            <div class="col-md-4 form-group">
+                <label>Status</label>
+                <select name="stringOrderStatus" class="form-control" required>
+                    <option value="WAITING_FOR_CONFIRMATION">Waiting for Confirmation</option>
+                    <option value="PREPARING">Preparing</option>
+                    <option value="DONE">Done</option>
+                </select>
+            </div>
+            <div class="col-md-4 form-group">
+                <label>Payment Method</label>
+                <select name="stringPaymentOption" class="form-control" required>
+                    <option value="CASH">Cash</option>
+                    <option value="CARD_UPFRONT">Card Upfront</option>
+                    <option value="CARD_ON_DELIVERY">Card on Delivery</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Note</label>
+            <textarea th:field="*{note}" class="form-control" rows="2"></textarea>
+        </div>
+
+        <hr>
+        <h5>Items</h5>
+        <div id="items-container">
+            <div class="row mb-2" th:each="item, itemStat : *{orderItems}">
+                <div class="col-md-6">
+                    <input type="text" th:field="*{orderItems[__${itemStat.index}__].name}"
+                           class="form-control" placeholder="Item Name">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" th:field="*{orderItems[__${itemStat.index}__].quantity}"
+                           class="form-control" placeholder="Qty">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" step="0.01" th:field="*{orderItems[__${itemStat.index}__].price}"
+                           class="form-control" placeholder="Price">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">Save Order</button>
+    </form>
+</div>
+</body>
+</html>
