@@ -9,4 +9,5 @@ public interface OrderManager {
     String validateAndSaveOrder(Order order);
     void deleteOrder(Long id);
     List<Order> sortOrders(List<Order> orders, String sortBy);
+    void updateOrderStatus(Long id, String status);
 }

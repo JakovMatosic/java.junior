@@ -48,6 +48,21 @@ public class OrderController {
         return "order/new_order"; // Adjust path if needed
     }
 
+    @GetMapping("/edit/{id}")
+    public String showEditOrderForm(@PathVariable("id") Long id, Model model) {
+        Order order = orderManager.getOrderById(id);
+        
+        if (order == null) {
+            return "redirect:/orders";
+        }
+        
+        model.addAttribute("order", order);
+        model.addAttribute("allBuyers", buyerRepository.findAll());
+        model.addAttribute("allAddresses", buyerAddressRepository.findAll());
+        model.addAttribute("isEdit", true);
+        return "order/new_order";
+    }
+
     @PostMapping("/saveOrder")
     public String saveOrder(@ModelAttribute("order") Order order) {
         String validationResult = orderManager.validateAndSaveOrder(order);
@@ -56,6 +71,23 @@ public class OrderController {
             return validationResult;
         }
         
+        return "redirect:/orders";
+    }
+
+    @PostMapping("/updateOrder")
+    public String updateOrder(@ModelAttribute("order") Order order) {
+        String validationResult = orderManager.validateAndSaveOrder(order);
+        
+        if (validationResult != null) {
+            return validationResult;
+        }
+        
+        return "redirect:/orders";
+    }
+
+    @PostMapping("/updateStatus/{id}")
+    public String updateOrderStatus(@PathVariable("id") Long id, @RequestParam("status") String status) {
+        orderManager.updateOrderStatus(id, status);
         return "redirect:/orders";
     }
 

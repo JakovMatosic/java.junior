@@ -8,10 +8,13 @@
 <body>
 <div class="container my-4">
     <p><a th:href="@{/orders}">← Back to orders</a></p>
-    <h3>Create New Order</h3>
+    <h3 th:text="${isEdit} ? 'Edit Order' : 'Create New Order'">Create New Order</h3>
     <hr>
 
-    <form th:action="@{/orders/saveOrder}" th:object="${order}" method="POST" id="orderForm">
+    <form th:action="${isEdit} ? @{/orders/updateOrder} : @{/orders/saveOrder}" th:object="${order}" method="POST" id="orderForm">
+        <!-- Hidden field to preserve order ID during update -->
+        <input type="hidden" th:field="*{orderNr}">
+        
         <div class="row">
             <div class="col-md-6 form-group">
                 <label>Select Buyer</label>
@@ -88,7 +91,7 @@
 
         <button type="button" id="addItemBtn" class="btn btn-secondary mt-2">Add Another Item</button>
 
-        <button type="submit" class="btn btn-success mt-3">Save Order</button>
+        <button type="submit" class="btn btn-success mt-3" th:text="${isEdit} ? 'Update Order' : 'Save Order'">Save Order</button>
     </form>
 </div>
 

@@ -44,7 +44,16 @@
                     <span th:text="${order.buyer.lastName}"></span>
                 </td>
 
-                <td th:text="${order.stringOrderStatus}">Status</td>
+                <td>
+                    <form th:action="@{/orders/updateStatus/{id}(id=${order.orderNr})}" method="POST" class="form-inline">
+                        <select name="status" class="form-control form-control-sm mr-2">
+                            <option value="WAITING_FOR_CONFIRMATION" th:selected="${order.stringOrderStatus == 'WAITING_FOR_CONFIRMATION'}">Waiting for Confirmation</option>
+                            <option value="PREPARING" th:selected="${order.stringOrderStatus == 'PREPARING'}">Preparing</option>
+                            <option value="DONE" th:selected="${order.stringOrderStatus == 'DONE'}">Done</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-info">Update</button>
+                    </form>
+                </td>
 
                 <td th:text="${#temporals.format(order.orderTime, 'dd.MM.yyyy. HH:mm')}">Time</td>
 
@@ -75,7 +84,7 @@
                 </td>
 
                 <td class="text-nowrap">
-                    <a th:href="@{/orders/showFormForUpdate/{id}(id=${order.orderNr})}" class="btn btn-primary btn-sm">Update</a>
+                    <a th:href="@{/orders/edit/{id}(id=${order.orderNr})}" class="btn btn-primary btn-sm">Update</a>
                     <a th:href="@{/orders/deleteOrder/{id}(id=${order.orderNr})}"
                        class="btn btn-danger btn-sm">Delete</a>
                 </td>

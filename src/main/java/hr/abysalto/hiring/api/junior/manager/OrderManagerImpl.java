@@ -2,6 +2,7 @@ package hr.abysalto.hiring.api.junior.manager;
 
 import hr.abysalto.hiring.api.junior.model.Order;
 import hr.abysalto.hiring.api.junior.model.OrderItem;
+import hr.abysalto.hiring.api.junior.model.OrderStatus;
 import hr.abysalto.hiring.api.junior.repository.BuyerRepository;
 import hr.abysalto.hiring.api.junior.repository.BuyerAddressRepository;
 import hr.abysalto.hiring.api.junior.repository.OrderRepository;
@@ -119,5 +120,14 @@ public class OrderManagerImpl implements OrderManager {
             }
         }
         order.setTotalPrice(sum);
+    }
+    
+    @Override
+    public void updateOrderStatus(Long id, String status) {
+        Order order = orderRepository.findById(id).orElse(null);
+        if (order != null) {
+            order.setStringOrderStatus(status);
+            orderRepository.save(order);
+        }
     }
 }
